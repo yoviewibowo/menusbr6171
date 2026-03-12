@@ -45,6 +45,39 @@ width:100%;
 padding:6px;
 }
 
+.marker-cluster-small {
+background: rgba(0,150,255,0.4);
+}
+
+.marker-cluster-small div {
+background: rgba(0,150,255,0.6);
+width: 30px;
+height: 30px;
+border-radius: 50%;
+}
+
+.marker-cluster-medium {
+background: rgba(255,165,0,0.4);
+}
+
+.marker-cluster-medium div {
+background: rgba(255,165,0,0.6);
+width: 40px;
+height: 40px;
+border-radius: 50%;
+}
+
+.marker-cluster-large {
+background: rgba(255,0,0,0.4);
+}
+
+.marker-cluster-large div {
+background: rgba(255,0,0,0.6);
+width: 50px;
+height: 50px;
+border-radius: 50%;
+}
+  
 </style>
 </head>
 
@@ -86,7 +119,27 @@ maxZoom:19
 }
 ).addTo(map)
 
-var markers = L.markerClusterGroup()
+var markers = L.markerClusterGroup({
+
+iconCreateFunction: function(cluster){
+
+return L.divIcon({
+html: "<div></div>",
+className: "marker-cluster",
+iconSize: L.point(40,40)
+
+})
+
+}
+
+})
+
+var pinIcon = L.icon({
+iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+iconSize: [25,41],
+iconAnchor: [12,41]
+})  
 
 var heatLayer
 var heatData=[]
@@ -113,13 +166,14 @@ data.forEach(function(u){
 
 if(!u.lat || !u.lon) return
 
-var marker = L.circleMarker(
+var marker = L.marker(
 [u.lat,u.lon],
-{
-radius:6,
-color:getColor(u.skala)
-}
+{icon: pinIcon}
 )
+
+var markers = L.markerClusterGroup({
+chunkedLoading:true
+})  
 
 var popup = `
 <b>${u.nama}</b><br>
@@ -252,3 +306,4 @@ loadData(usahaData)
 
 </body>
 </html>
+
