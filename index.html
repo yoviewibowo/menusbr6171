@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8"/>
+<meta charset="utf-8">
 <title>Peta Sebaran Usaha Pontianak</title>
 
 <link rel="stylesheet"
@@ -52,7 +52,8 @@ padding:6px;
 
 <div class="panel">
 
-<b>Peta Usaha Pontianak</b>
+<b>Peta Sebaran Usaha</b><br>
+Kota Pontianak
 
 <input type="text" id="searchBox" placeholder="Cari nama usaha">
 
@@ -79,13 +80,17 @@ padding:6px;
 var map = L.map('map').setView([-0.02,109.34],12)
 
 L.tileLayer(
-'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+{
+maxZoom:19
+}
 ).addTo(map)
 
 var markers = L.markerClusterGroup()
 
 var heatLayer
 var heatData=[]
+
 var usahaData=[]
 
 function getColor(skala){
@@ -104,11 +109,11 @@ function loadData(data){
 markers.clearLayers()
 heatData=[]
 
-data.forEach(u=>{
+data.forEach(function(u){
 
 if(!u.lat || !u.lon) return
 
-var marker=L.circleMarker(
+var marker = L.circleMarker(
 [u.lat,u.lon],
 {
 radius:6,
@@ -116,10 +121,11 @@ color:getColor(u.skala)
 }
 )
 
-var popup=`
+var popup = `
 <b>${u.nama}</b><br>
-${u.kegiatan}<br>
+Jenis Usaha: ${u.kegiatan}<br>
 Skala: ${u.skala}<br>
+Alamat: ${u.alamat}<br>
 Kelurahan: ${u.desa}<br>
 Kecamatan: ${u.kecamatan}
 `
@@ -134,25 +140,32 @@ heatData.push([u.lat,u.lon,0.5])
 
 map.addLayer(markers)
 
-heatLayer=L.heatLayer(heatData,{radius:25})
+heatLayer = L.heatLayer(heatData,{
+radius:25
+})
 
 }
 
 function populateKecamatan(data){
 
-var kecSet=new Set()
+var kecSet = new Set()
 
-data.forEach(d=>{
-if(d.kecamatan) kecSet.add(d.kecamatan)
+data.forEach(function(d){
+
+if(d.kecamatan){
+kecSet.add(d.kecamatan)
+}
+
 })
 
-var select=document.getElementById("filterKec")
+var select = document.getElementById("filterKec")
 
-kecSet.forEach(k=>{
+kecSet.forEach(function(k){
 
-var opt=document.createElement("option")
-opt.value=k
-opt.text=k
+var opt = document.createElement("option")
+
+opt.value = k
+opt.text = k
 
 select.appendChild(opt)
 
@@ -162,18 +175,20 @@ select.appendChild(opt)
 
 function filterData(){
 
-var kec=document.getElementById("filterKec").value
-var search=document.getElementById("searchBox").value.toLowerCase()
+var kec = document.getElementById("filterKec").value
 
-var filtered=usahaData.filter(u=>{
+var search = document.getElementById("searchBox")
+.value.toLowerCase()
 
-var cocok=true
+var filtered = usahaData.filter(function(u){
 
-if(kec && u.kecamatan!=kec)
-cocok=false
+var cocok = true
+
+if(kec && u.kecamatan != kec)
+cocok = false
 
 if(search && !u.nama.toLowerCase().includes(search))
-cocok=false
+cocok = false
 
 return cocok
 
@@ -198,27 +213,34 @@ map.addLayer(heatLayer)
 
 }
 
-fetch("DATA SBR UPDATED.xlsx")
-.then(res=>res.arrayBuffer())
-.then(data=>{
+fetch("DATA_SBR_UPDATED.xlsx")
 
-var workbook=XLSX.read(data,{type:"array"})
+.then(res => res.arrayBuffer())
 
-var sheet=workbook.Sheets[workbook.SheetNames[0]]
+.then(data => {
 
-var json=XLSX.utils.sheet_to_json(sheet)
+var workbook = XLSX.read(data,{type:"array"})
 
-usahaData=json.map(r=>({
+var sheet = workbook.Sheets[workbook.SheetNames[0]]
 
-nama:r.nama_usaha,
-kegiatan:r.kegiatan_usaha,
-skala:r.skala_usaha,
-kecamatan:r.nmkec,
-desa:r.nmdesa,
-lat:parseFloat(r.latitude),
-lon:parseFloat(r.longitude)
+var json = XLSX.utils.sheet_to_json(sheet)
 
-}))
+usahaData = json.map(function(r){
+
+return {
+
+nama: r.nama_usaha,
+alamat: r.alamat_usaha,
+kegiatan: r.kegiatan_usaha,
+skala: r.skala_usaha,
+kecamatan: r.nmkec,
+desa: r.nmdesa,
+lat: parseFloat(r.latitude),
+lon: parseFloat(r.longitude)
+
+}
+
+})
 
 populateKecamatan(usahaData)
 
