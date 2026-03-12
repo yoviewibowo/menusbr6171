@@ -140,11 +140,13 @@ L.tileLayer(
 
 var markers = L.markerClusterGroup({
 chunkedLoading:true,
+
 chunkProgress: function(processed, total, elapsed){
 if (elapsed > 1000) {
 console.log(processed + " / " + total)
 }
-}
+},
+
 iconCreateFunction: function(cluster){
 
 var count = cluster.getChildCount()
@@ -308,6 +310,7 @@ loadData(usahaData)
 
 </body>
 </html>
+
 
 
 
