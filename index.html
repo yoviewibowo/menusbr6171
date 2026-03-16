@@ -328,7 +328,8 @@ dynamicTyping:true,
 complete:function(results){
 
 var data=results.data
-
+console.log("Total baris CSV:", data.length)
+  
 usahaData=data.map(function(r){
 
 return{
