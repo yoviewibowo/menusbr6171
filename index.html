@@ -21,6 +21,8 @@ font-family:Arial;
 height:100vh;
 }
 
+/* PANEL MENU */
+
 .panel{
 position:absolute;
 top:10px;
@@ -52,6 +54,8 @@ font-size:13px;
 margin-top:10px;
 }
 
+/* CLUSTER STYLE */
+
 .marker-cluster-custom{
 background:rgba(0,120,255,0.6);
 border-radius:50%;
@@ -64,10 +68,46 @@ width:40px;
 height:40px;
 }
 
+/* LOADING SCREEN */
+
+#loading{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:white;
+z-index:2000;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+}
+
+.spinner{
+width:40px;
+height:40px;
+border:4px solid #ddd;
+border-top:4px solid #0078ff;
+border-radius:50%;
+animation:spin 1s linear infinite;
+margin-bottom:10px;
+}
+
+@keyframes spin{
+0%{transform:rotate(0deg)}
+100%{transform:rotate(360deg)}
+}
+
 </style>
 </head>
 
 <body>
+
+<div id="loading">
+<div class="spinner"></div>
+<div>Memuat Peta Usaha Kota Pontianak...</div>
+</div>
 
 <div class="panel">
 
@@ -134,28 +174,7 @@ var usahaData=[]
 
 var sheetURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vTtxjPWA_jckzAWIbQUs0s2dKWE76oenRiukwAlRpNIAn0YaBLCN68-Kt1oHEVLeEu8HKw8hDy0dapw/pub?output=csv"
 
-
-function getColor(skala){
-
-if(!skala) return "blue"
-
-skala=skala.toLowerCase()
-
-if(skala.includes("mikro")) return "green"
-if(skala.includes("kecil")) return "orange"
-if(skala.includes("menengah")) return "red"
-if(skala.includes("besar")) return "purple"
-
-return "blue"
-
-}
-
 function createMarker(u){
-
-var icon=L.divIcon({
-html:"📍",
-className:""
-})
 
 var marker=L.marker([u.lat,u.lon])
 
@@ -195,11 +214,16 @@ heatLayer=L.heatLayer(heatData,{radius:25})
 
 updateStat(data)
 
+if(markers.getLayers().length>0){
+map.fitBounds(markers.getBounds())
+}
+
 }
 
 function updateStat(data){
 
 var kecCount={}
+var total=data.length
 
 data.forEach(function(u){
 
@@ -210,7 +234,7 @@ kecCount[u.kecamatan]++
 
 })
 
-var html=""
+var html="<b>Total Usaha : "+total+"</b><br><br>"
 
 for(var k in kecCount){
 
@@ -280,11 +304,17 @@ document.getElementById("searchBox")
 
 function toggleHeatmap(){
 
+if(!heatLayer) return
+
 if(map.hasLayer(heatLayer))
 map.removeLayer(heatLayer)
 else
 map.addLayer(heatLayer)
 
+}
+
+function hideLoading(){
+document.getElementById("loading").style.display="none"
 }
 
 function loadSheet(){
@@ -319,6 +349,8 @@ lon:parseFloat(r.longitude)
 populateKecamatan(usahaData)
 loadData(usahaData)
 
+hideLoading()
+
 }
 
 })
@@ -326,8 +358,6 @@ loadData(usahaData)
 }
 
 loadSheet()
-
-setInterval(loadSheet,30000)
 
 </script>
 
