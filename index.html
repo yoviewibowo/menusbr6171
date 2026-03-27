@@ -163,7 +163,10 @@ chunkedLoading:true,
 iconCreateFunction:function(cluster){
 
 var children = cluster.getAllChildMarkers()
-var kec = children[0]?.options.kecamatan || "default"
+var kec = "default"
+if(children.length > 0 && children[0].options.kecamatan){
+kec = children[0].options.kecamatan
+}
 var color = getColor(kec)
 
 var count = cluster.getChildCount()
@@ -343,22 +346,27 @@ complete:function(results){
 var data=results.data
 console.log("Total baris CSV:", data.length)
 
-usahaData=data.map(function(r){
+usahaData = data.map(function(r){
 
-return{
-nama:r.nama_usaha,
-idsbr:r.idsbr,
-alamat:r.alamat_usaha,
-kegiatan:r.kegiatan_usaha,
-skala:r.skala_usaha,
-kecamatan:r.nmkec,
-desa:r.nmdesa,
-profiler:r.gc_username,
-lat:parseFloat(r.latitude),
-lon:parseFloat(r.longitude)
+return {
+nama: r.nama_usaha || "",
+idsbr: r.idsbr || "",
+alamat: r.alamat_usaha || "",
+kegiatan: r.kegiatan_usaha || "",
+skala: r.skala_usaha || "",
+kecamatan: r.nmkec || "",
+desa: r.nmdesa || "",
+profiler: r.gc_username || "",
+lat: parseFloat(r.latitude) || 0,
+lon: parseFloat(r.longitude) || 0
 }
 
 })
+
+usahaData = usahaData.filter(function(u){
+return !isNaN(u.lat) && !isNaN(u.lon) && u.lat != 0 && u.lon != 0
+})  
+
 
 populateKecamatan(usahaData)
 loadData(usahaData)
