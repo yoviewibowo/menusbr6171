@@ -35,7 +35,7 @@ display:flex;align-items:center;justify-content:center;
 color:white;font-weight:bold;width:40px;height:40px;
 }
 
-/* 🌸 LOADING MOCHA PASTEL 🌸 */
+/* LOADING */
 #loading{
 position:fixed;top:0;left:0;width:100%;height:100%;
 background:linear-gradient(135deg,#EFD6BF,#C87A32);
@@ -151,6 +151,9 @@ var usahaData=[]
 
 var sheetURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vTtxjPWA_jckzAWIbQUs0s2dKWE76oenRiukwAlRpNIAn0YaBLCN68-Kt1oHEVLeEu8HKw8hDy0dapw/pub?output=csv"
 
+/* 🔥 FIX DOUBLE RENDER */
+var currentRenderId = 0
+
 /* PROGRESS */
 function updateProgress(val){
 document.getElementById("progress-bar").style.width=val+"%"
@@ -181,16 +184,21 @@ marker.bindPopup(popup)
 return marker
 }
 
-/* 🔥 PROGRESSIVE MARKER */
+/* PROGRESSIVE MARKER (FIXED) */
 function loadData(data){
 
 markers.clearLayers()
 heatData=[]
 
+currentRenderId++
+let renderId = currentRenderId
+
 let i=0
 let batchSize=200
 
 function addBatch(){
+
+if(renderId !== currentRenderId) return
 
 let count=0
 
@@ -209,7 +217,6 @@ count++
 
 }
 
-// update progress real
 updateProgress((i/data.length)*100)
 
 if(i<data.length){
@@ -294,11 +301,18 @@ loadData(filtered)
 
 }
 
+/* 🔥 DEBOUNCE SEARCH */
+let typingTimer
+document.getElementById("searchBox")
+.addEventListener("keyup",function(){
+
+clearTimeout(typingTimer)
+typingTimer = setTimeout(filterData,300)
+
+})
+
 document.getElementById("filterKec")
 .addEventListener("change",filterData)
-
-document.getElementById("searchBox")
-.addEventListener("keyup",filterData)
 
 function toggleHeatmap(){
 if(!heatLayer) return
