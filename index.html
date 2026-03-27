@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>MAPPING ECONOMIC NETWORK UNIT - SBR 6171</title>
+<title>MAPPING ECONOMIC NETWORK UNIT (MENU) - SBR 6171</title>
 
 <link rel="stylesheet"
 href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -106,7 +106,7 @@ margin-bottom:10px;
 
 <div id="loading">
 <div class="spinner"></div>
-<div>Memuat Peta Usaha Hasil SBR Kota Pontianak...</div>
+<div>Memuat Peta Usaha SBR Kota Pontianak...</div>
 </div>
 
 <div class="panel">
@@ -337,16 +337,16 @@ console.log("Total baris CSV:", data.length)
   
 usahaData=data.map(function(r){
 return{
-nama:r.nama_usaha || "",
-idsbr:r.idsbr || "",
-alamat:r.alamat_usaha || "",
-kegiatan:r.kegiatan_usaha || "",
-skala:r.skala_usaha || "",
-kecamatan:r.nmkec || "",
-desa:r.nmdesa || "",
-profiler:r.gc_username || "",
-lat:parseFloat(r.latitude) || 0,
-lon:parseFloat(r.longitude) || 0
+nama:r.nama_usaha,
+idsbr:r.idsbr,
+alamat:r.alamat_usaha,
+kegiatan:r.kegiatan_usaha,
+skala:r.skala_usaha,
+kecamatan:r.nmkec,
+desa:r.nmdesa,
+profiler:r.gc_username,
+lat:parseFloat(r.latitude),
+lon:parseFloat(r.longitude)
 }
 })
 
