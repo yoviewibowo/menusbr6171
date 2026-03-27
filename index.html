@@ -180,6 +180,8 @@ var marker=L.marker([u.lat,u.lon])
 
 var popup=`
 <b>${u.nama}</b><br>
+<b>${u.idsbr}</b><br>
+Profiler: ${u.profiler}<br>
 Jenis: ${u.kegiatan}<br>
 Skala: ${u.skala}<br>
 Alamat: ${u.alamat}<br>
@@ -335,11 +337,13 @@ usahaData=data.map(function(r){
 return{
 
 nama:r.nama_usaha,
+idsbr:r.idsbr,
 alamat:r.alamat_usaha,
 kegiatan:r.kegiatan_usaha,
 skala:r.skala_usaha,
 kecamatan:r.nmkec,
 desa:r.nmdesa,
+profiler:r.gc_username  
 lat:parseFloat(r.latitude),
 lon:parseFloat(r.longitude)
 
